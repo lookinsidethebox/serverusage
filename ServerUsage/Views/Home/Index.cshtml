@@ -1,0 +1,75 @@
+﻿@model ServerUsage.Models.IndexViewModel
+@{
+	ViewBag.Title = "Серверы";
+}
+
+<div class="row">
+	<a class="btn btn-default" href="/Home/Add">Add</a>
+	<a class="btn btn-default" id="btn-remove" data-show="0">Remove</a>
+</div>
+<div class="row">
+	<table class="table table-bordered">
+		<tbody>
+			<tr>
+				<td>CurrentDateTime:</td>
+				<td>@DateTime.Now.ToString()</td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>TotalUsageTime:</td>
+				<td>@Model.TotalUsageTime</td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>VirtualServerId</td>
+				<td>CreateDateTime</td>
+				<td>RemoveDateTime</td>
+				<td>SelectedForRemove</td>
+			</tr>
+			@foreach (var item in Model.ServersHistory)
+			{
+				<tr>
+					<td>@item.VirtualServerId</td>
+					<td>@item.CreateDateTime</td>
+					<td>@item.RemoveDateTime</td>
+					<td>
+						@if (!item.RemoveDateTime.HasValue)
+						{
+							<input type="checkbox" data-serverid="@item.VirtualServerId" class="select-for-remove" />
+						}
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</div>
+
+@section scripts
+{
+	<script>
+		$(function () {
+			$(document).on('change', '.select-for-remove', () => {
+				let checked = [...$('.select-for-remove')].filter(item => $(item).prop('checked'));
+				let removeButton = $('#btn-remove');
+				if (checked) {
+					removeButton.show();
+				} else {
+					removeButton.hide()
+				}
+			});
+
+			$(document).on('click', '#btn-remove', () => {
+				let checked = [...$('.select-for-remove')].filter(item => $(item).prop('checked'));
+				let serverIds = checked.map(item => $(item).data('serverid'));
+				$.ajax({
+					url: "/Home/Remove",
+					method: "POST",
+					data: { serverIds },
+					success: () => window.location.reload()
+				});
+			});
+		});
+	</script>
+}

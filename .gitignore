@@ -1,0 +1,8 @@
+/.vs/*
+/packages/*
+*.sln
+*.dll
+*.pdb
+/ServerUsage/bin/*
+/ServerUsage/obj/*
+*.csproj*
